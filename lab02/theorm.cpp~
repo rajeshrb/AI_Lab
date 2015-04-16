@@ -1,0 +1,225 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_set>
+
+using namespace std;
+
+struct node
+{
+	string id;
+	node* lnode;
+	node* rnode;
+	node(): lnode(NULL), rnode(NULL){} 	
+};
+
+
+void create_tree(string input,node *tree);
+void printTree(node *root);
+void printset(unordered_set<node*> &temp);
+
+void printTree(node *root) 
+{
+	if (root->lnode == NULL)
+	{
+		cout<<root->id;
+		return ;
+	}
+	else 
+	{
+		cout << "(";
+		printTree(root->lnode);
+		cout << root->id;
+		printTree(root->rnode);
+		cout << ")";
+	}
+}
+
+void printset(unordered_set<node*> &temp)
+{
+	unordered_set<node*>::iterator it;
+	unordered_set<node*>::iterator it1;
+	for(it=temp.begin();it!=temp.end();it++)
+	{
+		printTree(*it);
+		it1 = it;
+		it1++;
+		if(it1 == temp.end()) cout<<" ";
+		else cout<<" , ";
+	}
+}
+
+string convert(string s)
+{
+	int l = s.size();
+	string temp="";
+	for(int i=0;i<l;i++)
+	{
+		if(s[i] == '(' || s[i] == ')' || s[i] == '-' || s[i] == '>') temp = temp+s[i];
+		else if(s[i] == '~')
+		{
+			temp = temp + '(' + '~' + s[i+1] + ')';
+			i++; 
+		}
+		else temp = temp + '('+s[i]+')';
+	}
+	return temp;
+}
+
+void delete_left(node *tree,unordered_set<node*> &v)
+{
+	if (tree->lnode==NULL && tree->rnode==NULL)
+	{
+		node* root = new node();
+		string s = tree->id;
+		if(s == "F") return;
+		else
+		{
+			string t = "("+s+")"+"->(F)";
+			create_tree(t,root);
+			v.insert(root);
+			printset(v);
+			cout<<"|- "<<"F";
+			cout<<endl;
+			return ;
+		}
+	 }
+	else 
+	{
+		v.insert(tree->lnode);	
+		node *temp = tree->rnode;
+		tree = temp;
+		printset(v);
+		cout<<"|- ";
+		printTree(temp);
+		cout<<endl<<endl;
+		delete_left(tree,v);
+	}
+}
+
+bool check(node *tree1,node *tree2)
+{
+	 if (tree1->id != tree2->id) return false;
+	 else if(tree1->id == tree2->id)
+	 {
+		if((tree1->id == tree2->id) && (tree1->lnode == NULL) && (tree1->rnode == NULL) && (tree2->lnode == NULL) && (tree2->rnode == NULL)) return true;
+		else 
+		{
+			bool check1= check(tree1->lnode,tree2->lnode); 
+			bool check2= check(tree1->rnode,tree2->rnode); 
+			return (check1 && check2);
+		}
+	}
+	else return false;
+}
+
+int modify_nodes(unordered_set<node*> &temp)
+{
+	int result=0;
+	unordered_set<node*>::iterator it,it1;
+	for(it=temp.begin(); it != temp.end(); it++)
+	{
+		for(it1=temp.begin(); it1 != temp.end(); it1++)
+		{
+			if((*it)->lnode != NULL)
+			{	
+				if(check((*it)->lnode,*it1))
+				{
+					node* temp1 = new node();
+					temp1 = *it;
+					node* temp2 = *it1;
+					node* temp3 = (*it)->rnode;
+					temp.insert(temp3);
+					result = 1;
+				}
+			}
+		}
+	}
+	return result;
+}
+
+void create_tree(string input,node *tree)
+{
+	int i=0;
+	int k=0;
+	int imply=0;
+	int count =0 ;
+	while (i < input.length()) 
+	{
+		if(input[i] == '(') count++;
+		else if(input[i] == ')') count--;
+		if(count == 0) break;		
+		i++;
+	}
+	while(k+1 < input.length()) 
+	{
+	    if((input[k] == '-') && (input[k+1] == '>')) imply = 1;
+	    k++;
+	}
+	if(imply==1) 
+	{
+		string s=input.substr(i+3);
+		int len = s.length();
+		tree->id = "->";
+		node *ltree = new node();
+		node *rtree = new node();
+		create_tree(input.substr(1,i-1),ltree);
+		create_tree(s.substr(1,len-2),rtree);
+		tree->lnode = ltree;
+		tree->rnode = rtree;
+	}
+	else 
+	{
+		if(input[0] == '~') 
+		{
+			tree->id = "->";
+			node* ltree = new node();
+			node* rtree = new node();
+			tree->lnode = ltree;
+			tree->rnode = rtree;
+			ltree->id.push_back(input[1]);
+			rtree->id = "F";
+		}
+		else 
+		{
+			tree->id.push_back(input[0]);
+		}
+	}
+}
+	
+int main()
+{
+	string input1;
+	string input2;
+	string a;
+	cin>>input1;
+	int t;
+	if(input1.size() == 1) input2 = input1;
+	else input2 = convert(input1);
+	unordered_set<node*> v;
+	node *tree = new node();
+	create_tree(input2,tree);    
+	cout<<endl<<"Deduction : \n";               
+	cout<<"|- "<<input1<<endl;
+	delete_left(tree,v);
+	unordered_set<node*>::iterator it;
+	int prover=1;
+	for(int i=0;i<20;i++)
+	{
+		int result;
+		result = modify_nodes(v);
+		printset(v);
+		cout<<" |- F"<<endl<<endl;
+		for(it=v.begin();it!=v.end();it++)
+		{
+			if((*it)->id == "F") 
+			{
+				cout<<"Propostional statement is Provable"<<endl<<endl;
+				prover=0;
+				break;	
+			}
+		}
+		if(prover == 0) break;
+	}
+	if(prover) cout<<"Propostion statement is  not Provable"<<endl<<endl;		
+}

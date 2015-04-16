@@ -8,14 +8,14 @@ Lab 02 :-
 	Theorom Prover
 
 Lab 03 :-
-	Grapheme-Phoneme Conversion Using HMM
-
-Lab 04 :-
 	Prolog - Circuit Verification with Connectivity
 
+Lab 04 :-
+	Grapheme-Phoneme Conversion Using HMM
+
 Lab 05 :-
-	Perceptron Traing Using Majority Function
+	Perceptron Traing Using Majority Function and sigmoid
 
 Lab 06 :-
-	Grapheme-Phoneme Using Neural Network 
+	Grapheme-Phoneme Using Neural Network back propagation
 	

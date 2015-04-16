@@ -1,0 +1,63 @@
+
+assumption:
+	total expanded nodes means all those nodes which are put into closed set and it different from the finale size of closed set.
+	note: some nodes are deleted from the closed i.e when a child node with better g value( better means less g) is found and it is in closed set then delete it.
+	
+test case 1 (path exists):
+	unidirectional: 
+		Manhattan heuristic: 167
+		Displaced Tile: 631
+		Own: 283
+		Overestimated: 8976
+	birectional:
+		Manhattan heuristic: >167 for goal to source and 167 from  source to goal
+		Displaced Tile: 412 for goal to source and >412 from source to goal
+		Own: >283 for goal to source and 283 from source to goal
+		Overestimated: 8205 for goal to source and >8205 from source to goal	
+
+test case 2 (path does not exists):
+	unidirectional:
+		Manhattan heuristic: 198584
+		Displaced Tile: 182692
+		Own: 187278
+		Overestimated: 181441
+	birectional:
+		Manhattan heuristic: >=198584 for goal to source and >=198584 from source to goal
+		Displaced Tile: >=182645 for goal to source and >=182645 from source to goal
+		Own: >=187278 for goal to source and >=187278 from source to goal
+		Overestimated: >=181441 for goal to source and >=181441 from source to goal
+
+test case 3 (path exists and hard):
+	unidrectional:
+		Manhattan heuristic: 17138
+		Displaced Tile: 129460
+		Own: 47967
+		Overestimated: 181440
+	birectional:
+		Manhattan heuristic: 9389 for goal to source and >9389 from source to goal
+		Displaced Tile: 125774 for goal to source and >125774 from source to goal
+		Own: 42501 for goal to source and >42501 from source to goal
+		Overestimated: >181440 for goal to source and 181440 from source to goal
+		
+test case 4 (path exists and moderate):
+	unidirectional:	
+		Manhattan heuristic: 17155
+		Displaced Tile: 129490
+		Own: 47988
+		Overestimated: 181440
+	birectional:
+		Manhattan heuristic: 9682 for goal to source and >9682 from source to goal
+		Displaced Tile: 125760 for goal to source and >125760 from source to goal
+		Own: 42524 for goal to source and >42524 from source to goal
+		Overestimated: 28490 for goal to source and 28490 from source to goal
+		 
+inference:
+	unidirectional search:
+		1. the better heuristic the better performance and better heuristic likely to expand more nodes in the case if no path exists and it is because it tries to find the path.
+		2. if h if far from h* then number of nodes expanded increases
+		3. if h>h* then it is likely to find sub-oprimal path
+
+	birectional:
+		1. is there exists a node such that the search from either directions meet at this node then the performance almost reduced to 1/3
+		2. it also depends on the node expanded. For example if there are more than one node with min(f) then choice of node affects the results.
+				
